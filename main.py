@@ -41,8 +41,8 @@ def predict():
             conf_thres=0.3, iou_thres=0.999, augment=True, agnostic_nms=True, save_txt=True)
 
         img, txt = prepare_result()
-        exp = txt.split('/')[-3]
-        with open(os.path.join('./runs/detect/', exp, 'labels', filename + '.json')) as f:
+        exp = txt.split('/')[-2] if '\\' in txt else txt.split('/')[-3]
+        with open(os.path.join('./runs/detect/', exp, 'labels', f'{filename}.json')) as f:
             predictions = json.load(f)
         resultImage = f'{exp}/{filename}.jpg'
         classes = list(set([obj['class'] for obj in predictions]))
