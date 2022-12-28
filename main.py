@@ -23,7 +23,7 @@ DETECTION_URL = "/v1/object-detection"
 @app.route('/v1/image/<exp>/<filename>')
 def serve_image(exp, filename):
     image = os.path.join('runs/detect/', exp, filename)
-    return send_file(image, mimetype='image/jpg')
+    return send_file(image, mimetype='image/jpeg')
 
 
 @app.route(DETECTION_URL, methods=["POST"])
