@@ -22,7 +22,7 @@ DETECTION_URL = "/v1/object-detection"
 
 @app.route('/v1/image/<exp>/<filename>')
 def serve_image(exp, filename):
-    image = os.path.join('./runs/detect/', exp, filename)
+    image = os.path.join('runs/detect/', exp, filename)
     return send_file(image, mimetype='image/jpg')
 
 
@@ -38,13 +38,13 @@ def predict():
         image.save(os.path.join(IMAGE_FOLDER_PATH, filename + '.jpg'))
 
         run(source=f'{IMAGE_FOLDER_PATH}{filename}.jpg', weights=WEIGHTS,
-            conf_thres=0.3, iou_thres=0.999, view_img=True, augment=True, agnostic_nms=True, save_txt=True)
+            conf_thres=0.3, iou_thres=0.999, augment=True, agnostic_nms=True, save_txt=True)
 
         img, txt = prepare_result()
         exp = txt.split('/')[-3]
         with open(os.path.join('./runs/detect/', exp, 'labels', filename + '.json')) as f:
             predictions = json.load(f)
-        resultImage = f'{exp}/{filename}.jpeg'
+        resultImage = f'{exp}/{filename}.jpg'
         classes = list(set([obj['class'] for obj in predictions]))
         class_names = [get_class_name(c) for c in classes]
 

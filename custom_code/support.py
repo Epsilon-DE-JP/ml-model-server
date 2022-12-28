@@ -70,7 +70,7 @@ def get_latest_result():
             if latest_result in path.split('/'):
                 result_files.append(os.path.join(path, name))
 
-    return latest_result
+    return result_files
 
 
 def prepare_result():
