@@ -65,10 +65,9 @@ def get_latest_result():
     latest_result = sorted(subdirs, reverse=True)[0]
     result_files = []
 
-    for path, subdirs, files in os.walk('./runs/detect/'):
+    for path, subdirs, files in os.walk(f'./runs/detect/{latest_result}/'):
         for name in files:
-            if latest_result in path.split('/'):
-                result_files.append(os.path.join(path, name))
+            result_files.append(os.path.join(path, name))
 
     return result_files
 
