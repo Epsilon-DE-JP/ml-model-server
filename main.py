@@ -1,12 +1,14 @@
+import argparse
+import base64
+import io
 import json
 import os.path
 
+from flask import Flask, request, jsonify, send_file
 from werkzeug.utils import secure_filename
 
 from custom_code.support import prepare_result, get_class_name
 from detect import run
-import argparse
-from flask import Flask, request, jsonify, send_file
 
 WEIGHTS = ['weights/x6_15_5_640_3.pt', 'weights/x_640_.pt', 'weights/x_nw_1024_6.pt', 'weights/x_16.pt',
            'weights/x_us_3.pt',
@@ -26,16 +28,28 @@ def serve_image(exp, filename):
     return send_file(image, mimetype='image/jpeg')
 
 
+def parse_base64_to_file(base64_input, image_id):
+    stream_bytes = base64.b64decode(base64_input)
+    stream = io.BytesIO(stream_bytes)
+    contents = stream.read()
+    filename = secure_filename(image_id)
+    try:
+        with open(os.path.join(IMAGE_FOLDER_PATH, filename + '.jpg'), 'wb') as f:
+            f.write(contents)
+        return filename
+    except:
+        return None
+
+
 @app.route(DETECTION_URL, methods=["POST"])
 def predict():
     if request.method != "POST":
         return
 
-    if request.files.get("file"):
+    if request.form.get('file'):
         image_id = request.form['id']
-        image = request.files["file"]
-        filename = secure_filename(image_id)
-        image.save(os.path.join(IMAGE_FOLDER_PATH, filename + '.jpg'))
+        base64_input = request.form.get('file')
+        filename = parse_base64_to_file(base64_input, image_id)
 
         run(source=f'{IMAGE_FOLDER_PATH}{filename}.jpg', weights=WEIGHTS,
             conf_thres=0.3, iou_thres=0.999, augment=True, agnostic_nms=True, save_txt=True)
